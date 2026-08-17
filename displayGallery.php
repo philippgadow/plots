@@ -88,11 +88,11 @@
             if(!in_array($curimg, $ignore)) {
                 $caption = htmlspecialchars($curimg, ENT_QUOTES, 'UTF-8');
                 $filePath = $dirname . "/" . $curimg;
-                $href = htmlspecialchars(encode_path_segments($filePath), ENT_QUOTES, 'UTF-8');
-                echo "<a data-fancybox=\"gallery\" data-caption=\"$caption\" title=\"$caption\" href=\"$href\">";
+                $href = encode_path_segments($filePath);
+                echo "<a data-fancybox=\"gallery\" data-caption=\"$caption\" title=\"$caption\" href=\"" . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . "\">";
                 if (is_previewable_image($curimg)) {
-                    $thumbSrc = htmlspecialchars("php/img.php?src=" . encode_path_segments($filePath) . "&w=300&zc=1", ENT_QUOTES, 'UTF-8');
-                    echo "<img src='$thumbSrc' alt='$caption'>";
+                    $thumbSrc = "php/img.php?src=" . encode_path_segments($filePath) . "&w=300&zc=1";
+                    echo "<img src=\"" . htmlspecialchars($thumbSrc, ENT_QUOTES, 'UTF-8') . "\" alt=\"$caption\">";
                 }
                 echo "<figcaption width=200px style=\"word-wrap: break-word; word-break: break-all;\">$caption</figcaption></a>";
             }
