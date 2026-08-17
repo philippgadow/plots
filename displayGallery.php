@@ -26,6 +26,14 @@
 
     <!-- Start PHP session -->
     <?php
+    function is_previewable_image($filename) {
+        return preg_match('/\.(gif|jpe?g|png)$/i', $filename) === 1;
+    }
+
+    function encode_path_segments($path) {
+        return implode('/', array_map('rawurlencode', explode('/', $path)));
+    }
+
     session_start();
     if (isset($_GET['collection'])) {
             $_SESSION['collection'] = $_GET["collection"];
@@ -68,13 +76,25 @@
 
         # Display filtered gallery
         $dirname = "content/".$collection;
-        $filter = $_GET['filter'];;
-        $images = preg_grep('/'.$filter.'/', scandir($dirname));
+        $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
+        if ($filter === '') {
+            $images = scandir($dirname);
+        } else {
+            $images = preg_grep('/'.preg_quote($filter, '/').'/', scandir($dirname));
+        }
         $ignore = array(".", "..");
         foreach($images as $curimg){
 
             if(!in_array($curimg, $ignore)) {
-                echo "<a data-fancybox=\"gallery\" data-caption=\"$curimg\" title=\"$curimg\" href=\"$dirname/$curimg\"><img src='php/img.php?src=$dirname/$curimg&w=300&zc=1'> <figcaption width=200px  style=\"word-wrap: break-word; word-break: break-all;\">$curimg</figcaption> </a>";
+                $caption = htmlspecialchars($curimg, ENT_QUOTES, 'UTF-8');
+                $filePath = $dirname . "/" . $curimg;
+                $href = encode_path_segments($filePath);
+                echo "<a data-fancybox=\"gallery\" data-caption=\"$caption\" title=\"$caption\" href=\"" . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . "\">";
+                if (is_previewable_image($curimg)) {
+                    $thumbSrc = "php/img.php?src=" . encode_path_segments($filePath) . "&w=300&zc=1";
+                    echo "<img src=\"" . htmlspecialchars($thumbSrc, ENT_QUOTES, 'UTF-8') . "\" alt=\"$caption\">";
+                }
+                echo "<figcaption width=200px style=\"word-wrap: break-word; word-break: break-all;\">$caption</figcaption></a>";
             }
         }
     ?>
