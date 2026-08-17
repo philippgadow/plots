@@ -91,7 +91,7 @@
                 $href = htmlspecialchars(encode_path_segments($filePath), ENT_QUOTES, 'UTF-8');
                 echo "<a data-fancybox=\"gallery\" data-caption=\"$caption\" title=\"$caption\" href=\"$href\">";
                 if (is_previewable_image($curimg)) {
-                    $thumbSrc = htmlspecialchars("php/img.php?src=" . rawurlencode($filePath) . "&w=300&zc=1", ENT_QUOTES, 'UTF-8');
+                    $thumbSrc = htmlspecialchars("php/img.php?src=" . encode_path_segments($filePath) . "&w=300&zc=1", ENT_QUOTES, 'UTF-8');
                     echo "<img src='$thumbSrc' alt='$caption'>";
                 }
                 echo "<figcaption width=200px style=\"word-wrap: break-word; word-break: break-all;\">$caption</figcaption></a>";
