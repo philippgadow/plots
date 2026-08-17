@@ -546,13 +546,13 @@ function checkExternal ($src) {
         'wordpress.com',
     );
 
-    if (ereg('http://', $src) == true) {
+    if (preg_match('#^https?://#i', $src) === 1) {
 
         $url_info = parse_url ($src);
 
         $isAllowedSite = false;
         foreach ($allowedSites as $site) {
-            if (ereg($site, $url_info['host']) == true) {
+            if (strpos($url_info['host'], $site) !== false) {
                 $isAllowedSite = true;
             }
         }
