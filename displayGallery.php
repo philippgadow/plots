@@ -30,6 +30,10 @@
     if (isset($_GET['collection'])) {
             $_SESSION['collection'] = $_GET["collection"];
       }
+
+    function is_previewable_image($filename) {
+        return preg_match('/\.(gif|jpe?g|png)$/i', $filename) === 1;
+    }
      ?>
 
    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse" id=ignorePDF>
@@ -68,13 +72,20 @@
 
         # Display filtered gallery
         $dirname = "content/".$collection;
-        $filter = $_GET['filter'];;
+        $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
         $images = preg_grep('/'.$filter.'/', scandir($dirname));
         $ignore = array(".", "..");
         foreach($images as $curimg){
 
             if(!in_array($curimg, $ignore)) {
-                echo "<a data-fancybox=\"gallery\" data-caption=\"$curimg\" title=\"$curimg\" href=\"$dirname/$curimg\"><img src='php/img.php?src=$dirname/$curimg&w=300&zc=1'> <figcaption width=200px  style=\"word-wrap: break-word; word-break: break-all;\">$curimg</figcaption> </a>";
+                $caption = htmlspecialchars($curimg, ENT_QUOTES, 'UTF-8');
+                $href = htmlspecialchars($dirname . "/" . $curimg, ENT_QUOTES, 'UTF-8');
+                echo "<a data-fancybox=\"gallery\" data-caption=\"$caption\" title=\"$caption\" href=\"$href\">";
+                if (is_previewable_image($curimg)) {
+                    $thumbSrc = htmlspecialchars("php/img.php?src=$dirname/$curimg&w=300&zc=1", ENT_QUOTES, 'UTF-8');
+                    echo "<img src='$thumbSrc' alt='$caption'>";
+                }
+                echo "<figcaption width=200px style=\"word-wrap: break-word; word-break: break-all;\">$caption</figcaption></a>";
             }
         }
     ?>
