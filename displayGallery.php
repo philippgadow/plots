@@ -34,6 +34,10 @@
     function is_previewable_image($filename) {
         return preg_match('/\.(gif|jpe?g|png)$/i', $filename) === 1;
     }
+
+    function encode_path_segments($path) {
+        return implode('/', array_map('rawurlencode', explode('/', $path)));
+    }
      ?>
 
    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse" id=ignorePDF>
@@ -79,10 +83,11 @@
 
             if(!in_array($curimg, $ignore)) {
                 $caption = htmlspecialchars($curimg, ENT_QUOTES, 'UTF-8');
-                $href = htmlspecialchars($dirname . "/" . $curimg, ENT_QUOTES, 'UTF-8');
+                $filePath = $dirname . "/" . $curimg;
+                $href = htmlspecialchars(encode_path_segments($filePath), ENT_QUOTES, 'UTF-8');
                 echo "<a data-fancybox=\"gallery\" data-caption=\"$caption\" title=\"$caption\" href=\"$href\">";
                 if (is_previewable_image($curimg)) {
-                    $thumbSrc = htmlspecialchars("php/img.php?src=$dirname/$curimg&w=300&zc=1", ENT_QUOTES, 'UTF-8');
+                    $thumbSrc = htmlspecialchars("php/img.php?src=" . rawurlencode($filePath) . "&w=300&zc=1", ENT_QUOTES, 'UTF-8');
                     echo "<img src='$thumbSrc' alt='$caption'>";
                 }
                 echo "<figcaption width=200px style=\"word-wrap: break-word; word-break: break-all;\">$caption</figcaption></a>";
