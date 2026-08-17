@@ -26,11 +26,6 @@
 
     <!-- Start PHP session -->
     <?php
-    session_start();
-    if (isset($_GET['collection'])) {
-            $_SESSION['collection'] = $_GET["collection"];
-      }
-
     function is_previewable_image($filename) {
         return preg_match('/\.(gif|jpe?g|png)$/i', $filename) === 1;
     }
@@ -38,6 +33,11 @@
     function encode_path_segments($path) {
         return implode('/', array_map('rawurlencode', explode('/', $path)));
     }
+
+    session_start();
+    if (isset($_GET['collection'])) {
+            $_SESSION['collection'] = $_GET["collection"];
+      }
      ?>
 
    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse" id=ignorePDF>
@@ -77,7 +77,11 @@
         # Display filtered gallery
         $dirname = "content/".$collection;
         $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
-        $images = preg_grep('/'.$filter.'/', scandir($dirname));
+        if ($filter === '') {
+            $images = scandir($dirname);
+        } else {
+            $images = preg_grep('/'.preg_quote($filter, '/').'/', scandir($dirname));
+        }
         $ignore = array(".", "..");
         foreach($images as $curimg){
 
